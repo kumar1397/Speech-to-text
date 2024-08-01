@@ -1,3 +1,4 @@
+"use client"
 import {useState,useEffect} from 'react';
 
 let recognition:any = null;
@@ -36,6 +37,9 @@ const useSpeechRecognition = () =>{
         text,
         isListening,
         startListening,
+        stopListening,
         hasRecognitionSupport: !!recognition,
     }
 }
+
+export default useSpeechRecognition;
