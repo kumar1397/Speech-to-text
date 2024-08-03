@@ -12,3 +12,7 @@ datasource db {
   provider = "mongodb"
   url      = env("DATABASE_URL")
 }
+model Text {
+  id      String     @id @default(auto()) @map("_id") @db.ObjectId
+  content String
+}
