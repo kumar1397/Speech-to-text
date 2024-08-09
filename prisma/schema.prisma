@@ -16,3 +16,10 @@ model Text {
   id      String     @id @default(auto()) @map("_id") @db.ObjectId
   content String
 }
+
+model AudioRecording {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  transcript String
+  audioUrl   String
+  createdAt  DateTime @default(now())
+}
