@@ -1,20 +1,20 @@
-"use client"
-import React, { useState, useEffect } from 'react';
+"use client";
+import React, { useState, useEffect, useRef } from 'react';
 
 const SpeechToText = () => {
   const [transcript, setTranscript] = useState('');
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
   const [isRecording, setIsRecording] = useState(false);
   const [recognition, setRecognition] = useState<SpeechRecognition | null>(null);
-  let mediaRecorder:any;
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      const SpeechRecognition = window.SpeechRecognition || (window as any).webkitSpeechRecognition;
       const recognitionInstance = new SpeechRecognition();
       setRecognition(recognitionInstance);
 
-      recognitionInstance.onresult = (event) => {
+      recognitionInstance.onresult = (event: SpeechRecognitionEvent) => {
         setTranscript(event.results[0][0].transcript);
       };
     }
@@ -25,10 +25,11 @@ const SpeechToText = () => {
     recognition?.start();
 
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    mediaRecorder = new MediaRecorder(stream);
+    const mediaRecorder = new MediaRecorder(stream);
+    mediaRecorderRef.current = mediaRecorder;
 
     let chunks: BlobPart[] = [];
-    mediaRecorder.ondataavailable = (event:any) => {
+    mediaRecorder.ondataavailable = (event: BlobEvent) => {
       chunks.push(event.data);
     };
 
@@ -43,7 +44,7 @@ const SpeechToText = () => {
   const stopRecording = () => {
     setIsRecording(false);
     recognition?.stop();
-    mediaRecorder.stop();
+    mediaRecorderRef.current?.stop();
   };
 
   const saveRecording = async () => {
@@ -53,7 +54,7 @@ const SpeechToText = () => {
     formData.append('transcript', transcript);
     formData.append('audio', audioBlob);
 
-    await fetch('/api/saveRecording', {
+    await fetch('/api/upload', {
       method: 'POST',
       body: formData,
     });
