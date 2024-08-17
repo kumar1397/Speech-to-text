@@ -22,7 +22,7 @@ export const POST = async (req: NextRequest) => {
     // Read chunks from the reader
     let result = await reader.read();
     while (!result.done) {
-      chunks.push(Buffer.from(result.value));  // Convert Uint8Array to Buffer
+      chunks.push(Buffer.from(result.value)); // Convert Uint8Array to Buffer
       result = await reader.read();
     }
 
@@ -71,6 +71,7 @@ export const POST = async (req: NextRequest) => {
 
     return NextResponse.json({ message: "Success", data: savedRecording }, { status: 201 });
   } catch (err) {
-    return NextResponse.json({ message: "Error", error: err }, { status: 500 });
+    console.error('Error:', err); // Log the error for debugging
+    return NextResponse.json({ message: "Error" }, { status: 500 });
   }
 };
